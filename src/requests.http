@@ -1,0 +1,37 @@
+
+### Create a new Stripe Customer
+POST http://localhost:3000/create-customer
+content-type: application/json
+
+{
+  "email": "test-customer@email.com"
+}
+
+### Create a new Stripe Checkout Session - Sunscription
+POST http://localhost:3000/checkout-session
+content-type: application/json
+
+{
+  "priceId": "price_1NQv8dLNWtF9dCjURgbNMsyf", 
+  "customerId": "cus_ODLccHBqGZ9ogR",
+  "paymentMode": "subscription"
+}
+
+
+### Create a new Stripe Checkout Session - One-time payment
+POST http://localhost:3000/checkout-session
+content-type: application/json
+
+{
+  "priceId": "price_1NQw13LNWtF9dCjUauWjffI5", 
+  "customerId": "cus_ODLccHBqGZ9ogR",
+  "paymentMode": "payment"
+}
+
+### Create a new Stripe Portal Session
+POST http://localhost:3000/portal-session
+content-type: application/json
+
+{
+  "customerId": "cus_ODLccHBqGZ9ogR"
+}
