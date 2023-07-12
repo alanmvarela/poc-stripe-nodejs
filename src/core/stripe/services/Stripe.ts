@@ -6,26 +6,18 @@ function getStripe() {
     });
 }
 
-const createCustomer: (email: string) => Promise<string> = async (
-    email
-) => {
-    const stripe = getStripe();
-    const customer = await stripe.customers.create({
-        email,
-      });
-    return customer.id;
-};
-
-const createCheckoutSession: (priceId: string, customerId: string, paymentMode: string) => Promise<string> = async (
+const createCheckoutSession: (priceId: string, customerId: string, email: string, paymentMode: string) => Promise<string> = async (
     priceId,
     customerId,
+    email,
     paymentMode
 ) => {
+
+    // Get Stripe instance
     const stripe = getStripe();
 
-    // Validar si el usuario ya tiene un customer id de stripe
-
-    const session = await stripe.checkout.sessions.create({
+    // Prepare checkout generic session parameters
+    const sessionParam: Stripe.Checkout.SessionCreateParams = {
         mode: paymentMode as Stripe.Checkout.SessionCreateParams.Mode,
         line_items: [
           {
@@ -33,30 +25,33 @@ const createCheckoutSession: (priceId: string, customerId: string, paymentMode: 
             quantity: 1,
           },
         ],
-        success_url: `${process.env.APP_URL}`,
-        cancel_url: `${process.env.APP_URL}`,
-        //customer: customerId,
-        customer_creation: 'always' as Stripe.Checkout.SessionCreateParams.CustomerCreation,
-        allow_promotion_codes: true,
-      });
-    console.log(session);
-    console.log(session.customer);
-    return session.url;
+        success_url: `${process.env.STRIPE_SUCCESS_URL}`,
+        cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
+      }
+
+    // Add customer to session if exists
+    if (customerId !== null){
+        sessionParam.customer = customerId;
+    } else {
+        // Add user email to session and create customer if not exists
+        sessionParam.customer_email = email;
+        sessionParam.customer_creation = 'always' as Stripe.Checkout.SessionCreateParams.CustomerCreation;
+    }
+
+    // Create checkout session
+    try {
+        const session = await stripe.checkout.sessions.create(sessionParam);
+        if (!session) {
+            throw new Error('Error creating checkout session');
+        }
+        return session.url;
+    } catch (error) {
+        // TBD - HOW DO WE WANT TO HANDLE RETURN ERRORS
+        return error.message;
+    }
 };
 
-const createPortalSession: (customerId: string) => Promise<string> = async (
-    customerId
-) => {
-    const stripe = getStripe();
-    const session = await stripe.billingPortal.sessions.create({
-        customer: customerId,
-        return_url: `${process.env.APP_URL}`,
-      });
-    return session.url;
-};
 
 export default {
-    createCustomer,
     createCheckoutSession,
-    createPortalSession,
 };
