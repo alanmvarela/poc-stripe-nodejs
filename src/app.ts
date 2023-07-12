@@ -15,8 +15,8 @@ app.post('/checkout-session', async (req, res) => {
   const priceId = req.body.priceId;
   const customerId = (req.body.customerId) ? req.body.customerId : null;
   const email = req.body.email;
-  const paymentMode = req.body.paymentMode;
-  const sessionUrl = await Stripe.createCheckoutSession(priceId, customerId, email, paymentMode);
+  const surveyId = req.body.surveyId;
+  const sessionUrl = await Stripe.createCheckoutSession(priceId, customerId, email, surveyId);
   res.send(sessionUrl);
 });
 

@@ -5,7 +5,7 @@ content-type: application/json
 {
   "priceId": "price_1NSljBLNWtF9dCjUL5UWJyXw", 
   "customerId": "cus_OFLrxXEx8d7Uvc",
-  "paymentMode": "payment"
+  "surveyId": "123456"
 }
 
 ### Create a new Stripe Checkout Session - One-time payment - without customer
@@ -14,7 +14,7 @@ content-type: application/json
 
 {
   "priceId": "price_1NSljBLNWtF9dCjUL5UWJyXw",
-  "paymentMode": "payment",
-  "email": "request-test@mail.com"
+  "email": "request-test@mail.com",
+  "surveyId": "123456"
 }
 

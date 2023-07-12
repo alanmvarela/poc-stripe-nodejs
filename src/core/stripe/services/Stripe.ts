@@ -6,19 +6,22 @@ function getStripe() {
     });
 }
 
-const createCheckoutSession: (priceId: string, customerId: string, email: string, paymentMode: string) => Promise<string> = async (
+const createCheckoutSession: (priceId: string, customerId: string, email: string, surveyId: string) => Promise<string> = async (
     priceId,
     customerId,
     email,
-    paymentMode
+    surveyId
 ) => {
+
+    // Define payment method for one time payment
+    const paymenyMethod = 'payment';
 
     // Get Stripe instance
     const stripe = getStripe();
 
     // Prepare checkout generic session parameters
     const sessionParam: Stripe.Checkout.SessionCreateParams = {
-        mode: paymentMode as Stripe.Checkout.SessionCreateParams.Mode,
+        mode: paymenyMethod,
         line_items: [
           {
             price: priceId,
@@ -27,6 +30,9 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
         ],
         success_url: `${process.env.STRIPE_SUCCESS_URL}`,
         cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
+        metadata: {
+            'surveyId': surveyId,
+        },
       }
 
     // Add customer to session if exists
