@@ -1,10 +1,17 @@
 import Stripe from 'stripe';
 
-function getStripe() {
-    return new Stripe(process.env.STRIPE_SECRET_KEY, {
-        apiVersion: '2022-11-15',
-    });
-}
+// stripe instance singleton
+const stripe = (() => {
+    let stripe: Stripe;
+    return () => {
+        if (!stripe) {
+            stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+                apiVersion: '2022-11-15',
+            });
+        }
+        return stripe;
+    };
+})();
 
 const createCheckoutSession: (priceId: string, customerId: string, email: string, surveyId: string) => Promise<string> = async (
     priceId,
@@ -15,9 +22,6 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
 
     // Define payment method for one time payment
     const paymenyMethod = 'payment';
-
-    // Get Stripe instance
-    const stripe = getStripe();
 
     // Prepare checkout generic session parameters
     const sessionParam: Stripe.Checkout.SessionCreateParams = {
@@ -30,8 +34,10 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
         ],
         success_url: `${process.env.STRIPE_SUCCESS_URL}`,
         cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
-        metadata: {
-            'surveyId': surveyId,
+        payment_intent_data: {
+            metadata: {
+                'survey_id': surveyId,
+            }
         },
       }
 
@@ -46,7 +52,7 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
 
     // Create checkout session
     try {
-        const session = await stripe.checkout.sessions.create(sessionParam);
+        const session = await stripe().checkout.sessions.create(sessionParam);
         if (!session) {
             throw new Error('Error creating checkout session');
         }
@@ -58,6 +64,14 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
 };
 
 
+const createWebhookEvent: (body: any, signature: string | string[]) => Promise<Stripe.Event> = async (
+    body,
+    signature
+) => {
+    return stripe().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
+};
+
 export default {
     createCheckoutSession,
+    createWebhookEvent,
 };
