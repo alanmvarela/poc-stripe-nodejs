@@ -1,13 +1,16 @@
 import { StripeCheckoutParams } from "../types/StripeCheckoutParams";
+import stripeCheckoutParamsValidator from "../validators/stripeCheckoutParamsValidator";
 
 const makeStripeCheckoutParams = (params: object) => {
-  // TODO - Validations
+    const { hasErrors, errors } = stripeCheckoutParamsValidator(params);
 
-  const validatedUser = {
-    ...params,
-  } as StripeCheckoutParams;
+    if (hasErrors) return { errors };
 
-  return validatedUser;
+    const validatedParams = {
+        ...params,
+    } as StripeCheckoutParams;
+
+    return {params:validatedParams};
 };
 
 export default makeStripeCheckoutParams;

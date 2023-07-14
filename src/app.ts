@@ -52,16 +52,21 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
 app.use(bodyParser.json());
 
 app.post('/checkout-session', async (req, res) => {
-  const StripeCheckoutParams = makeStripeCheckoutParams({ 
-    'priceId': req.body.priceId,
+  const {params, errors} = makeStripeCheckoutParams({ 
+    'priceId': (req.body.priceId) ? req.body.priceId : '',
     'customerId': (req.body.customerId) ? req.body.customerId : null,
     'email': (req.body.email) ? req.body.email : null,
-    'surveyId': req.body.surveyId });
-  try {
-    const sessionUrl = await Stripe.createCheckoutSession(StripeCheckoutParams);
-    res.send(sessionUrl);
-  } catch (error) {
-    res.status(500).send(error.message);
+    'surveyId': (req.body.surveyId) ? req.body.surveyId : '',
+  });
+  if (errors) {
+    res.status(400).send(errors);
+  } else {
+    try {
+      const sessionUrl = await Stripe.createCheckoutSession(params);
+      res.send(sessionUrl);
+    } catch (error) {
+      res.status(500).send(error.message);
+    }
   }
 });
 
