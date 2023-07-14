@@ -27,6 +27,9 @@ const createCheckoutSession: (priceId: string, customerId: string, paymentMode: 
 
     const session = await stripe.checkout.sessions.create({
         mode: paymentMode as Stripe.Checkout.SessionCreateParams.Mode,
+        invoice_creation: {
+            enabled: true,
+        },
         line_items: [
           {
             price: priceId,
