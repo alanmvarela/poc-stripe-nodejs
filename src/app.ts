@@ -49,13 +49,14 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
   response.send();
 });
 
+// bodyParser set here as otherwiser it mess the webhook endpoint above
 app.use(bodyParser.json());
 
 app.post('/checkout-session', async (req, res) => {
   const {params, errors} = makeStripeCheckoutParams({ 
     'priceId': (req.body.priceId) ? req.body.priceId : '',
     'customerId': (req.body.customerId) ? req.body.customerId : null,
-    'email': (req.body.email) ? req.body.email : null,
+    'email': (req.body.email) ? req.body.email : '',
     'surveyId': (req.body.surveyId) ? req.body.surveyId : '',
   });
   if (errors) {

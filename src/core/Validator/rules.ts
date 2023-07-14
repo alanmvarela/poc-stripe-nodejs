@@ -11,7 +11,8 @@ export const isEmail: Rule = (message) => (value: string, key) => {
   const emailRegex =
     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-  if (!value.match(emailRegex))
+  // TODO - Fix this in Alliansis Validators
+  if ((value.trim() !== "") && (!value.match(emailRegex)))
     return message || `${key} "${value}" is not a valid email.`;
 
   return true;

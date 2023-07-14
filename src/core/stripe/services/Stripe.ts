@@ -14,6 +14,9 @@ const stripe = (() => {
     };
 })();
 
+const createCheckoutSession: (params: StripeCheckoutParams ) => Promise<string> = async (
+    params
+) => {
     // Define payment method for one time payment
     const paymenyMethod = 'payment';
 
@@ -43,6 +46,17 @@ const stripe = (() => {
         sessionParam.customer_email = params.email;
         sessionParam.customer_creation = 'always' as Stripe.Checkout.SessionCreateParams.CustomerCreation;
     }
+
+    try {
+        const session = await stripe().checkout.sessions.create(sessionParam);
+        if (!session) {
+            throw new Error('Error creating checkout session');
+        }
+        return session.url;
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
 
 
 const createWebhookEvent: (body: any, signature: string | string[]) => Promise<Stripe.Event> = async (
