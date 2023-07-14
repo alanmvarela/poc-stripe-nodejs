@@ -32,6 +32,20 @@ Run the start:dev command
   npm run start:dev
 ```
 
+## Get Stripe Webhook Secret
+
+To get the stripe webhook secret It's necessary create a webhook on Stripe dashboard.
+
+To follow those steps you can check it out [here](https://stripe.com/docs/webhooks). [Video related](https://youtu.be/4-yy11qT1IU)
+
+Once you have followed the steps to create a new webhook, write down in a new terminal the following command:
+
+```bash
+stripe listen --forward-to localhost:3000/webhook
+```
+
+More info related [here](https://stripe.com/docs/webhooks/test).
+
 ## Testing
 
 ### Prerequisites

@@ -1,10 +1,21 @@
 ### Create a new Stripe Checkout Session - One-time payment - with customer
+
+### Create a new Stripe Customer
+POST http://localhost:3000/create-customer
+content-type: application/json
+
+{
+  "email": "test-customer@email.com"
+}
+
+
+### Create a new Stripe Checkout Session - Nahuel Webhook example
 POST http://localhost:3000/checkout-session
 content-type: application/json
 
 {
-  "priceId": "price_1NSljBLNWtF9dCjUL5UWJyXw", 
-  "customerId": "cus_OFLrxXEx8d7Uvc",
+  "priceId": "price_1NTVsxGji5f6UBXTpmHkGLGl", 
+  "customerId": "cus_OFz5keyQDnY45J",
   "surveyId": "123456"
 }
 
