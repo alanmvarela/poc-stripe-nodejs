@@ -1,4 +1,5 @@
 import Stripe from 'stripe';
+import { StripeCheckoutParams } from '../types/StripeCheckoutParams';
 
 // stripe instance singleton
 const stripe = (() => {
@@ -13,13 +14,6 @@ const stripe = (() => {
     };
 })();
 
-const createCheckoutSession: (priceId: string, customerId: string, email: string, surveyId: string) => Promise<string> = async (
-    priceId,
-    customerId,
-    email,
-    surveyId
-) => {
-
     // Define payment method for one time payment
     const paymenyMethod = 'payment';
 
@@ -28,7 +22,7 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
         mode: paymenyMethod,
         line_items: [
           {
-            price: priceId,
+            price: params.priceId,
             quantity: 1,
           },
         ],
@@ -36,32 +30,19 @@ const createCheckoutSession: (priceId: string, customerId: string, email: string
         cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
         payment_intent_data: {
             metadata: {
-                'survey_id': surveyId,
+                'survey_id': params.surveyId,
             }
         },
       }
 
     // Add customer to session if exists
-    if (customerId !== null){
-        sessionParam.customer = customerId;
+    if (params.customerId !== null){
+        sessionParam.customer = params.customerId;
     } else {
         // Add user email to session and create customer if not exists
-        sessionParam.customer_email = email;
+        sessionParam.customer_email = params.email;
         sessionParam.customer_creation = 'always' as Stripe.Checkout.SessionCreateParams.CustomerCreation;
     }
-
-    // Create checkout session
-    try {
-        const session = await stripe().checkout.sessions.create(sessionParam);
-        if (!session) {
-            throw new Error('Error creating checkout session');
-        }
-        return session.url;
-    } catch (error) {
-        // TBD - HOW DO WE WANT TO HANDLE RETURN ERRORS
-        return error.message;
-    }
-};
 
 
 const createWebhookEvent: (body: any, signature: string | string[]) => Promise<Stripe.Event> = async (

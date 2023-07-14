@@ -2,7 +2,9 @@ import express from 'express';
 import Stripe from './core/stripe/services/Stripe';
 import bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
+import makeStripeCheckoutParams from './core/stripe/entities/makeStripeCheckoutParams';
 
+// Set config path
 dotenv.config({ path: __dirname+'/../.env' });
 
 
@@ -50,12 +52,17 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
 app.use(bodyParser.json());
 
 app.post('/checkout-session', async (req, res) => {
-  const priceId = req.body.priceId;
-  const customerId = (req.body.customerId) ? req.body.customerId : null;
-  const email = req.body.email;
-  const surveyId = req.body.surveyId;
-  const sessionUrl = await Stripe.createCheckoutSession(priceId, customerId, email, surveyId);
-  res.send(sessionUrl);
+  const StripeCheckoutParams = makeStripeCheckoutParams({ 
+    'priceId': req.body.priceId,
+    'customerId': (req.body.customerId) ? req.body.customerId : null,
+    'email': (req.body.email) ? req.body.email : null,
+    'surveyId': req.body.surveyId });
+  try {
+    const sessionUrl = await Stripe.createCheckoutSession(StripeCheckoutParams);
+    res.send(sessionUrl);
+  } catch (error) {
+    res.status(500).send(error.message);
+  }
 });
 
 app.get('/success', async (req, res) => {
