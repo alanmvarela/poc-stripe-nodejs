@@ -4,9 +4,9 @@ import bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
 import makeStripeCheckoutParams from './core/stripe/entities/makeStripeCheckoutParams';
 
+
 // Set config path
 dotenv.config({ path: __dirname+'/../.env' });
-
 
 const app = express();
 const port = 3000;

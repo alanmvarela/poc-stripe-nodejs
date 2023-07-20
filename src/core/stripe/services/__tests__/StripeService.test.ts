@@ -3,11 +3,7 @@ import {
   StripeCheckoutParams,
 } from '../../types/StripeCheckoutParams';
 import StripeClient from '../../clients/StripeClient';
-
-// Import the function to be tested
 import StripeService from '../StripeService';
-
-
 
 
 describe('createCheckoutSession', () => {
