@@ -1,18 +1,8 @@
 import Stripe from 'stripe';
+import StripeClient from '../clients/StripeClient';
 import { StripeCheckoutParams } from '../types/StripeCheckoutParams';
 
-// stripe instance singleton
-const stripe = (() => {
-    let stripe: Stripe;
-    return () => {
-        if (!stripe) {
-            stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-                apiVersion: '2022-11-15',
-            });
-        }
-        return stripe;
-    };
-})();
+
 
 const createCheckoutSession: (params: StripeCheckoutParams ) => Promise<string> = async (
     params
@@ -48,7 +38,7 @@ const createCheckoutSession: (params: StripeCheckoutParams ) => Promise<string> 
     }
 
     try {
-        const session = await stripe().checkout.sessions.create(sessionParam);
+        const session = await StripeClient.getStripeClient().checkout.sessions.create(sessionParam);
         if (!session) {
             throw new Error('Error creating checkout session');
         }
@@ -63,7 +53,7 @@ const createWebhookEvent: (body: any, signature: string | string[]) => Promise<S
     body,
     signature
 ) => {
-    return stripe().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
+    return StripeClient.getStripeClient().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET);
 };
 
 export default {

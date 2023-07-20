@@ -1,12 +1,12 @@
 import express from 'express';
-import Stripe from './core/stripe/services/Stripe';
+import Stripe from './core/stripe/services/StripeService';
 import bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
 import makeStripeCheckoutParams from './core/stripe/entities/makeStripeCheckoutParams';
 
+
 // Set config path
 dotenv.config({ path: __dirname+'/../.env' });
-
 
 const app = express();
 const port = 3000;
