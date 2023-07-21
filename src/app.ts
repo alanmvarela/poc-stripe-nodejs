@@ -54,10 +54,10 @@ app.use(bodyParser.json());
 
 app.post('/checkout-session', async (req, res) => {
   const {params, errors} = makeStripeCheckoutParams({ 
-    'priceId': (req.body.priceId) ? req.body.priceId : '',
     'customerId': (req.body.customerId) ? req.body.customerId : null,
     'email': (req.body.email) ? req.body.email : '',
-    'surveyId': (req.body.surveyId) ? req.body.surveyId : '',
+    'lineItems': (req.body.lineItems) ? req.body.lineItems : [],
+    'paymentMethod': (req.body.paymentMethod) ? req.body.paymentMethod : 'payment',
   });
   if (errors) {
     res.status(400).send(errors);

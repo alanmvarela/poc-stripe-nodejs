@@ -3,6 +3,21 @@ POST http://localhost:3000/checkout-session
 content-type: application/json
 
 {
+  "customerId": "cus_OGPMgZkXyXLkod",
+  "lineItems": [
+    {
+      "price": "price_1NTnsyBw7boqKQQGj8XMsMTx",
+      "quantity": 1
+    }
+  ],
+  "paymentMethod": "payment"
+}
+
+### Create a new Stripe Checkout Session - One-time payment with customer
+POST http://localhost:3000/checkout-session
+content-type: application/json
+
+{
   "priceId": "price_1NSljBLNWtF9dCjUL5UWJyXw", 
   "customerId": "cus_OFLrxXEx8d7Uvc",
   "surveyId": "12345"

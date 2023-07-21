@@ -17,25 +17,15 @@ const stripe = (() => {
 const createCheckoutSession: (params: StripeCheckoutParams ) => Promise<string> = async (
     params
 ) => {
-    // Define payment method for one time payment
-    const paymenyMethod = 'payment';
-
     // Prepare checkout generic session parameters
     const sessionParam: Stripe.Checkout.SessionCreateParams = {
-        mode: paymenyMethod,
-        line_items: [
-          {
-            price: params.priceId,
-            quantity: 1,
-          },
-        ],
+        mode: params.paymentMethod,
+        invoice_creation: {
+            enabled: true,
+        },
+        line_items: params.lineItems,
         success_url: `${process.env.STRIPE_SUCCESS_URL}`,
         cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
-        payment_intent_data: {
-            metadata: {
-                'survey_id': params.surveyId,
-            }
-        },
       }
 
     // Add customer to session if exists

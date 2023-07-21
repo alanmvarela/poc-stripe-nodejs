@@ -1,7 +1,13 @@
-// TODO - Move into Alliansis packages/types
+import Stripe from "stripe";
+
 export type StripeCheckoutParams = {
-    priceId: string,
     customerId: string,
     email: string,
-    surveyId: string,
+    lineItems: LineItem[],
+    paymentMethod: Stripe.Checkout.SessionCreateParams.Mode
+};
+
+export type LineItem = {
+    price: string,
+    quantity: number
 };
