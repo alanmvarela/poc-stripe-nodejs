@@ -1,13 +1,4 @@
-import Stripe from "stripe";
+import { z } from "zod";
+import { CheckoutParamsSchema } from "../schemas/checkout-params.schema";
 
-export type StripeCheckoutParams = {
-    customerId: string,
-    email: string,
-    lineItems: LineItem[],
-    paymentMethod: Stripe.Checkout.SessionCreateParams.Mode
-};
-
-export type LineItem = {
-    price: string,
-    quantity: number
-};
+export type StripeCheckoutParams = z.infer<typeof CheckoutParamsSchema>;
