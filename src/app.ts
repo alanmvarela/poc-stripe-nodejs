@@ -2,7 +2,7 @@ import express from 'express';
 import Stripe from './core/stripe/services/Stripe';
 import bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
-import makeStripeCheckoutParams from './core/stripe/entities/makeStripeCheckoutParams';
+import { CheckoutParamsSchema } from './core/stripe/schemas/checkout-params.schema';
 
 // Set config path
 dotenv.config({ path: __dirname+'/../.env' });
@@ -53,21 +53,19 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
 app.use(bodyParser.json());
 
 app.post('/checkout-session', async (req, res) => {
-  const {params, errors} = makeStripeCheckoutParams({ 
-    'priceId': (req.body.priceId) ? req.body.priceId : '',
-    'customerId': (req.body.customerId) ? req.body.customerId : null,
-    'email': (req.body.email) ? req.body.email : '',
-    'surveyId': (req.body.surveyId) ? req.body.surveyId : '',
-  });
-  if (errors) {
-    res.status(400).send(errors);
-  } else {
-    try {
-      const sessionUrl = await Stripe.createCheckoutSession(params);
-      res.send(sessionUrl);
-    } catch (error) {
-      res.status(500).send(error.message);
-    }
+  let params = null;
+  try {
+    params = CheckoutParamsSchema.parse(req.body);
+  }
+  catch (error) {
+    return res.status(400).send(error);
+  }
+  try {
+    const sessionUrl = await Stripe.createCheckoutSession(params);
+    res.send(sessionUrl);
+  }
+  catch (error) {
+    res.status(500).send(error.message);
   }
 });
 

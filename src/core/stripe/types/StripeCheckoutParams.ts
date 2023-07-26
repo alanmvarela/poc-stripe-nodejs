@@ -1,7 +1,4 @@
-// TODO - Move into Alliansis packages/types
-export type StripeCheckoutParams = {
-    priceId: string,
-    customerId: string,
-    email: string,
-    surveyId: string,
-};
+import { z } from "zod";
+import { CheckoutParamsSchema } from "../schemas/checkout-params.schema";
+
+export type StripeCheckoutParams = z.infer<typeof CheckoutParamsSchema>;

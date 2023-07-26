@@ -14,39 +14,36 @@ const stripe = (() => {
     };
 })();
 
-const createCheckoutSession: (params: StripeCheckoutParams ) => Promise<string> = async (
+const createCheckoutSession: (params: StripeCheckoutParams) => Promise<string> = async (
     params
 ) => {
-    // Define payment method for one time payment
-    const paymenyMethod = 'payment';
-
     // Prepare checkout generic session parameters
     const sessionParam: Stripe.Checkout.SessionCreateParams = {
-        mode: paymenyMethod,
-        line_items: [
-          {
-            price: params.priceId,
-            quantity: 1,
-          },
-        ],
+        mode: params.paymentMethod,
+        invoice_creation: {
+            enabled: true,
+        },
+        line_items: params.lineItems,
         success_url: `${process.env.STRIPE_SUCCESS_URL}`,
         cancel_url: `${process.env.STRIPE_CANCEL_URL}`,
-        payment_intent_data: {
-            metadata: {
-                'survey_id': params.surveyId,
-            }
-        },
       }
 
-    // Add customer to session if exists
-    if (params.customerId !== null){
+    // Add customer to session if provided
+    if (params.customerId) {
         sessionParam.customer = params.customerId;
     } else {
-        // Add user email to session and create customer if not exists
-        sessionParam.customer_email = params.email;
-        sessionParam.customer_creation = 'always' as Stripe.Checkout.SessionCreateParams.CustomerCreation;
+        // Add customer email to session if provided
+        if (params.email) {
+            sessionParam.customer_email = params.email;
+        }
+        // Define customer creation
+        if (params.createCustomer) {
+            sessionParam.customer_creation = 'always' as Stripe.Checkout.SessionCreateParams.CustomerCreation;
+        }
+        else {
+            sessionParam.customer_creation = 'if_required' as Stripe.Checkout.SessionCreateParams.CustomerCreation;
+        }
     }
-
     try {
         const session = await stripe().checkout.sessions.create(sessionParam);
         if (!session) {
