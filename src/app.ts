@@ -58,7 +58,7 @@ app.post('/checkout-session', async (req, res) => {
     params = CheckoutParamsSchema.parse(req.body);
   }
   catch (error) {
-    res.status(400).send(error);
+    return res.status(400).send(error);
   }
   try {
     const sessionUrl = await Stripe.createCheckoutSession(params);

@@ -1,4 +1,4 @@
-### Create a new Stripe Checkout Session - One-time payment with customer
+### Create a new Stripe Checkout Session - Using customer id
 POST http://localhost:3000/checkout-session
 content-type: application/json
 
@@ -10,25 +10,54 @@ content-type: application/json
       "quantity": 1
     }
   ],
-  "paymentMethod": "payment"
+  "paymentMethod": "payment",
+  "createCustomer": false
 }
 
-### Create a new Stripe Checkout Session - One-time payment with customer
+### Create a new Stripe Checkout Session - Using email
 POST http://localhost:3000/checkout-session
 content-type: application/json
 
 {
-  "priceId": "price_1NSljBLNWtF9dCjUL5UWJyXw", 
-  "customerId": "cus_OFLrxXEx8d7Uvc",
-  "surveyId": "12345"
+  "email": "test2@email.com",
+  "lineItems": [
+    {
+      "price": "price_1NTnsyBw7boqKQQGj8XMsMTx",
+      "quantity": 1
+    }
+  ],
+  "paymentMethod": "payment",
+  "createCustomer": true
 }
 
-### Create a new Stripe Checkout Session - One-time payment without customer
+### Create a new Stripe Checkout Session - Without customer and email
 POST http://localhost:3000/checkout-session
 content-type: application/json
 
 {
-  "priceId": "price_1NSljBLNWtF9dCjUL5UWJyXw", 
+  "lineItems": [
+    {
+      "price": "price_1NTnsyBw7boqKQQGj8XMsMTx",
+      "quantity": 1
+    }
+  ],
+  "paymentMethod": "payment",
+  "createCustomer": true
+}
+
+### Bad request with both customerId and email
+POST http://localhost:3000/checkout-session
+content-type: application/json
+
+{
+  "customerId": "cus_OGPMgZkXyXLkod",
   "email": "testcust@mail.com",
-  "surveyId": "12345"
+  "lineItems": [
+    {
+      "price": "price_1NTnsyBw7boqKQQGj8XMsMTx",
+      "quantity": 1
+    }
+  ],
+  "paymentMethod": "payment",
+  "createCustomer": true
 }
