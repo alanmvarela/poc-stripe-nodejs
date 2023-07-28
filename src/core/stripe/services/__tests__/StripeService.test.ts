@@ -4,6 +4,9 @@ import {
 } from '../../types/StripeCheckoutParams';
 import StripeClient from '../../clients/StripeClient';
 import StripeService from '../StripeService';
+import {
+  CheckoutParamsSchema,
+} from '../../schemas/checkoutParams.schema';
 
 
 describe('createCheckoutSession', () => {
@@ -19,8 +22,6 @@ describe('createCheckoutSession', () => {
         quantity: 1,
       },
     ],
-    customerId: 'test_customer_id',
-    email: 'test@example.com',
     paymentMethod: 'payment',
   };
 
@@ -69,8 +70,15 @@ describe('createCheckoutSession', () => {
     
     const createCheckoutSessionMock = setUpMocks(checkoutSessionResponse);
 
+    // Assures only the customer is sent in the params
+    delete params.email;
+    params.customerId = 'fake_customer_id';
+
+    // Format the params using the CheckoutParamsSchema
+    const formattedParams = CheckoutParamsSchema.parse(params);
+
     // Run the checkout session creation
-    const sessionUrl = await StripeService.createCheckoutSession(params);
+    const sessionUrl = await StripeService.createCheckoutSession(formattedParams);
     
     // Add customer to expected session parameters
     const sessionParamsWithCustomer = {
@@ -88,7 +96,7 @@ describe('createCheckoutSession', () => {
     );
   });
 
-  it('should create a checkout session without stripe customer', async () => {
+  it('should create a checkout session with email and create_customer if_required', async () => {
     // Set the createCheckoutSession response to the success url
     const checkoutSessionResponse = {
       url: process.env.STRIPE_SUCCESS_URL,
@@ -96,11 +104,52 @@ describe('createCheckoutSession', () => {
     
     const createCheckoutSessionMock = setUpMocks(checkoutSessionResponse);
 
-    // Remove customerId param
-    params.customerId = null;
+    // Assures only email is send the params
+    delete params.customerId;
+    params.email = 'test@mail.com';
+    params.createCustomer = false;
+
+    // Format the params using the CheckoutParamsSchema
+    const formattedParams = CheckoutParamsSchema.parse(params);
 
     // Run the checkout session creation
-    const sessionUrl = await StripeService.createCheckoutSession(params);
+    const sessionUrl = await StripeService.createCheckoutSession(formattedParams);
+    
+    // Add customer to expected session parameters
+    const sessionParamsWithoutCustomer = {
+      ...createCheckoutSessionParams,
+      customer_email: params.email,
+      customer_creation: 'if_required',
+    }
+
+    // Assert that the checkout session url is the success url
+    expect(sessionUrl).toBe(process.env.STRIPE_SUCCESS_URL);
+
+    // Assert that the createCheckoutSession function is called with the correct parameters
+    expect(createCheckoutSessionMock).toHaveBeenCalledTimes(1);
+    expect(createCheckoutSessionMock).toHaveBeenCalledWith(
+      sessionParamsWithoutCustomer
+    );
+  });
+
+  it('should create a checkout session with email and create_customer always', async () => {
+    // Set the createCheckoutSession response to the success url
+    const checkoutSessionResponse = {
+      url: process.env.STRIPE_SUCCESS_URL,
+    };
+    
+    const createCheckoutSessionMock = setUpMocks(checkoutSessionResponse);
+
+    // Assures only email is send the params
+    delete params.customerId;
+    params.email = 'test@mail.com';
+    params.createCustomer = true;
+
+    // Format the params using the CheckoutParamsSchema
+    const formattedParams = CheckoutParamsSchema.parse(params);
+
+    // Run the checkout session creation
+    const sessionUrl = await StripeService.createCheckoutSession(formattedParams);
     
     // Add customer to expected session parameters
     const sessionParamsWithoutCustomer = {

@@ -74,6 +74,10 @@ Run the test with coverage
   npm run test:cov
 ```
 
+### Manual Testing
+
+To manually test the API you can use the src/requests.http file that contains samples of each request accepted by the api.
+
 ### Prerequisites
 
 - Create Stripe account and get test api key.
@@ -83,10 +87,6 @@ Run the test with coverage
 - Start app locally.
 - Send requests.
 
-### Manual Testing
-
-To manually test the API you can use the src/requests.http file that contains samples of each request accepted by the api.
-
 ## Lessons Learned
 
 While creating the Stripe API integration with nodejs we came to below conclussions:
@@ -95,7 +95,7 @@ While creating the Stripe API integration with nodejs we came to below conclussi
 
 ## Next Steps
 
-- Add validation to api request body parameters with zod.
 - Add error logging for the api.
 - Update requests.http file with error scenarios.
 - Add Integration test.
+- Add other stripe scenarios.
