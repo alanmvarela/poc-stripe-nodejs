@@ -1,8 +1,8 @@
 import express from 'express';
-import Stripe from './core/stripe/services/Stripe';
+import StripeService from './core/stripe/services/StripeService';
 import bodyParser from 'body-parser';
 import * as dotenv from "dotenv";
-import { CheckoutParamsSchema } from './core/stripe/schemas/checkout-params.schema';
+import { CheckoutParamsSchema } from './core/stripe/schemas/checkoutParams.schema';
 
 // Set config path
 dotenv.config({ path: __dirname+'/../.env' });
@@ -16,7 +16,7 @@ app.post('/webhook', express.raw({type: 'application/json'}), async (request, re
   let event;
   try {
     const signature = request.headers['stripe-signature'];
-    event = await Stripe.createWebhookEvent(request.body, signature);
+    event = await StripeService.createWebhookEvent(request.body, signature);
     console.log("⚡️ [Webhook] ✅ verified: ", event.id)
   } catch (err) {
     console.log(`⚡️ [Webhook] ❌ Error message: ${err.message}`);
@@ -61,7 +61,7 @@ app.post('/checkout-session', async (req, res) => {
     return res.status(400).send(error);
   }
   try {
-    const sessionUrl = await Stripe.createCheckoutSession(params);
+    const sessionUrl = await StripeService.createCheckoutSession(params);
     res.send(sessionUrl);
   }
   catch (error) {

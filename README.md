@@ -48,6 +48,36 @@ More info related [here](https://stripe.com/docs/webhooks/test).
 
 ## Testing
 
+Install dependencies
+
+```bash
+  npm i
+```
+
+Run one of the bellow commands depending the test mode you want
+
+Just run the tests
+
+```bash
+  npm run test
+```
+
+Run the test in watch mode
+
+```bash
+  npm run test:watch
+```
+
+Run the test with coverage
+
+```bash
+  npm run test:cov
+```
+
+### Manual Testing
+
+To manually test the API you can use the src/requests.http file that contains samples of each request accepted by the api.
+
 ### Prerequisites
 
 - Create Stripe account and get test api key.
@@ -57,10 +87,6 @@ More info related [here](https://stripe.com/docs/webhooks/test).
 - Start app locally.
 - Send requests.
 
-### Manual Testing
-
-To manually test the API you can use the src/requests.http file that contains samples of each request accepted by the api.
-
 ## Lessons Learned
 
 While creating the Stripe API integration with nodejs we came to below conclussions:
@@ -69,13 +95,7 @@ While creating the Stripe API integration with nodejs we came to below conclussi
 
 ## Next Steps
 
-- Add validation to api request body parameters.
-- Add logic to validate if a customer needs to be created or not.
-- Add logic to recover a customer id from a session id when neccesary.
-- Add error handling for the api.
 - Add error logging for the api.
 - Update requests.http file with error scenarios.
-- Add Documentation to the code.
-- Store productids.
-- Add Unit test.
 - Add Integration test.
+- Add other stripe scenarios.
